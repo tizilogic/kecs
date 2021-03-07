@@ -64,7 +64,13 @@ class System {
         var futureComponents = entity.getPostAdditionComponentTypes();
         for (kv in myFilters.keyValueIterator()) {
             var match = kv.value.eval(futureComponents);
-            var present = myEntities[kv.value].contains(entity);
+            var present = false;
+            if (!myEntities.exists(kv.value)) {
+                myEntities[kv.value] = [];
+            }
+            else if (myEntities[kv.value].contains(entity)) {
+                present = true;
+            }
             if (match && !present) {
                 myEntities[kv.value].push(entity);
                 enteredFilters.push(kv.key);
