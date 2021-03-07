@@ -166,11 +166,11 @@ class World {
         var removalPool = delPool.copy();
         delPool.resize(0);
 
-        for (id in entities.keys()) {
+        for (entity in removalPool) {
             for (sort in systems.keys()) {
-                systems[sort].proposeRemoval(entities[id]);
+                systems[sort].proposeRemoval(entity);
             }
-            entities[id].flushRemovals();
+            entity.flushRemovals();
         }
     }
 
