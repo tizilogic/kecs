@@ -1,0 +1,12 @@
+{
+	"name": "kecs",
+	"url" : "https://github.com/tizilogic/kecs",
+	"license": "MIT",
+	"tags": ["cross", "game"],
+	"description": "Rudimentary ECS",
+	"version": "0.0.1",
+	"releasenote": "Initial release.",
+	"contributors": ["tcdude"],
+	"dependencies": {},
+	"classPath": "Sources"
+}
