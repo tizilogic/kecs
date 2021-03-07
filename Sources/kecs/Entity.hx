@@ -24,6 +24,9 @@ class Entity {
         myWorld = world;
         id = currentId;
         ++currentId;
+        components = [];
+        addedComponents = [];
+        droppedComponents = [];
     }
 
     /**
