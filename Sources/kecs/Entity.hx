@@ -31,7 +31,7 @@ class Entity {
      * @param component
      */
     public inline function addComponent(component:Component) {
-        var t = Type.getClass(component);
+        var t = Type.getClassName(Type.getClass(component));
         if (components.exists(t) && !droppedComponents.contains(t)) {
             throw "Component type is already part of this Entity";
         }

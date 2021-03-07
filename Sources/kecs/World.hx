@@ -101,12 +101,8 @@ class World {
      * @return Bool
      */
     public function hasSystem(systemT:SystemType):Bool {
-        var chk = Type.getClassName(systemT);
-        if (chk == null) {
-            throw "Unable to retrieve class name of systemT";
-        }
         for (id in systems.keys()) {
-            if (Type.getClassName(Type.getClass(systems[id])) == chk) {
+            if (Type.getClassName(Type.getClass(systems[id])) == systemT) {
                 return true;
             }
         }
@@ -119,12 +115,8 @@ class World {
      * @return System
      */
     public function getSystem(systemT:SystemType):System {
-        var chk = Type.getClassName(systemT);
-        if (chk == null) {
-            throw "Unable to retrieve class name of systemT";
-        }
         for (id in systems.keys()) {
-            if (Type.getClassName(Type.getClass(systems[id])) == chk) {
+            if (Type.getClassName(Type.getClass(systems[id])) == systemT) {
                 return systems[id];
             }
         }
@@ -136,12 +128,8 @@ class World {
      * @param systemT The derived class of the System to remove
      */
     public function removeSystem(systemT:SystemType) {
-        var chk = Type.getClassName(systemT);
-        if (chk == null) {
-            throw "Unable to retrieve class name of systemT";
-        }
         for (id in systems.keys()) {
-            if (Type.getClassName(Type.getClass(systems[id])) == chk) {
+            if (Type.getClassName(Type.getClass(systems[id])) == systemT) {
                 systems[id].destroy();
                 systems.remove(id);
                 sortArr.remove(id);
