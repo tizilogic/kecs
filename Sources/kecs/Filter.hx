@@ -52,8 +52,8 @@ class _BaseFilter implements Filter {
     private var myFilters:Array<Filter>;
 
     public function new(?componentTypes:Array<ComponentType>, ?filters:Array<Filter>) {
-        myComponentTypes = componentTypes;
-        myFilters = filters;
+        myComponentTypes = componentTypes != null ? componentTypes : [];
+        myFilters = filters != null ? filters : [];
     }
 
     public function eval(componentTypes:Array<ComponentType>):Bool {
