@@ -61,6 +61,7 @@ class System {
     private inline function proposeAdd(entity:Entity) {
         var enteredFilters:Array<String> = [];
         var futureComponents = entity.getPostAdditionComponentTypes();
+        var inserted = false;
         for (kv in myFilters.keyValueIterator()) {
             var match = kv.value.eval(futureComponents);
             var present = false;
@@ -74,9 +75,10 @@ class System {
                 myEntities[kv.value].push(entity);
                 enteredFilters.push(kv.key);
             }
+            inserted = match || inserted;
         }
         enterFilters(enteredFilters, entity);
-        if (!myAllEntities.contains(entity)) {
+        if (inserted && !myAllEntities.contains(entity)) {
             myAllEntities.push(entity);
         }
     }
