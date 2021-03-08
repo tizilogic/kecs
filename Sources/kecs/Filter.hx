@@ -1,15 +1,17 @@
 package kecs;
 
+import kecs.Entity;
+
 
 /**
  * Interface representing a filter to match against `kecs.Component` types and
  * sub-filters.
  */
 interface Filter {
-    private var myComponentTypes:Array<String>;
+    private var myComponentTypes:Array<ClassKey>;
     private var myFilters:Array<Filter>;
 
-    public function eval(componentTypes:Array<String>):Bool;
+    public function eval(componentTypes:Array<ClassKey>):Bool;
 }
 
 
@@ -21,12 +23,11 @@ class FilterFactory {
      * @param filters
      * @return Filter
      */
-    public static function andFilter<T:Component>(?componentTypes:Array<Class<Dynamic>>, ?filters:Array<Filter>):Filter {
+    public static function andFilter<T:Component>(?componentTypes:Array<ClassKey>, ?filters:Array<Filter>):Filter {
         if (componentTypes == null && filters == null) {
             throw "At least one parameter has to be passed in.";
         }
-        var cNames = componentTypes != null ? [for (c in componentTypes) Type.getClassName(c)] : null;
-        return new _AndFilter(cNames, filters);
+        return new _AndFilter(componentTypes, filters);
     }
 
     /**
@@ -36,34 +37,33 @@ class FilterFactory {
      * @param filters
      * @return Filter
      */
-    public static function orFilter<T:Component>(?componentTypes:Array<Class<Dynamic>>, ?filters:Array<Filter>):Filter {
+    public static function orFilter<T:Component>(?componentTypes:Array<ClassKey>, ?filters:Array<Filter>):Filter {
         if (componentTypes == null && filters == null) {
             throw "At least one parameter has to be passed in.";
         }
-        var cNames = componentTypes != null ? [for (c in componentTypes) Type.getClassName(c)] : null;
-        return new _OrFilter(cNames, filters);
+        return new _OrFilter(componentTypes, filters);
     }
 }
 
 
 @:dox(hide)
 class _BaseFilter implements Filter {
-    private var myComponentTypes:Array<String>;
+    private var myComponentTypes:Array<ClassKey>;
     private var myFilters:Array<Filter>;
 
-    public function new(?componentTypes:Array<String>, ?filters:Array<Filter>) {
+    public function new(?componentTypes:Array<ClassKey>, ?filters:Array<Filter>) {
         myComponentTypes = componentTypes != null ? componentTypes : [];
         myFilters = filters != null ? filters : [];
     }
 
-    public function eval(componentTypes:Array<String>):Bool {
+    public function eval(componentTypes:Array<ClassKey>):Bool {
         throw "_BaseFilter is not meant to be used directly";
     }
 }
 
 @:dox(hide)
 class _AndFilter extends _BaseFilter {
-    public override function eval(componentTypes:Array<String>):Bool {
+    public override function eval(componentTypes:Array<ClassKey>):Bool {
         for (cT in myComponentTypes) {
             if (componentTypes.indexOf(cT) == -1) {
                 return false;
@@ -81,7 +81,7 @@ class _AndFilter extends _BaseFilter {
 
 @:dox(hide)
 class _OrFilter extends _BaseFilter {
-    public override function eval(componentTypes:Array<String>):Bool {
+    public override function eval(componentTypes:Array<ClassKey>):Bool {
         for (cT in myComponentTypes) {
             if (componentTypes.indexOf(cT) != -1) {
                 return true;
