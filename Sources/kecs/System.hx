@@ -42,7 +42,7 @@ class System {
         for (filter in filters) {
             for (field in Type.getInstanceFields(Type.getClass(this))) {
                 if (field == "enterFilter" + filter) {
-                    Reflect.field(this, field)(entity);
+                    Reflect.callMethod(this, Reflect.field(this, field), [entity]);
                 }
             }
         }
@@ -52,7 +52,7 @@ class System {
         for (filter in filters) {
             for (field in Type.getInstanceFields(Type.getClass(this))) {
                 if (field == "exitFilter" + filter) {
-                    Reflect.field(this, field)(entity);
+                    Reflect.callMethod(this, Reflect.field(this, field), [entity]);
                 }
             }
         }
