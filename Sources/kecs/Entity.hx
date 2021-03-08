@@ -1,7 +1,6 @@
 package kecs;
 
 import kecs.Component;
-import kecs.CustomTypes;
 import kecs.World;
 
 
@@ -12,13 +11,11 @@ import kecs.World;
 class Entity {
     private static var currentId:Int = 0;
 
-    public var c(get, null):Map<ComponentType, Component>;
-
     private var myWorld:World;
     private var id:Int;
-    private var components:Map<ComponentType, Component>;
-    private var addedComponents:Map<ComponentType, Component>;
-    private var droppedComponents:Array<ComponentType>;
+    private var components:Map<String, Component>;
+    private var addedComponents:Map<String, Component>;
+    private var droppedComponents:Array<String>;
 
     public function new(world:World) {
         myWorld = world;
@@ -50,12 +47,15 @@ class Entity {
     /**
      * Get a Component of this Entity by its Type
      * @param componentT
+     * @return Component
      */
-    public inline function getComponent(componentT:ComponentType) {
-        if (components.exists(componentT)) {
-            return components[componentT];
+    public function getComponent<T:Component>(componentT:Class<T>):T {
+        var name = Type.getClassName(componentT);
+        var c:T = cast components[name];
+        if (c == null) {
+            throw "Component type not present in this Entity";
         }
-        throw "Component type not present in this Entity";
+        return c;
     }
 
     /**
@@ -63,31 +63,29 @@ class Entity {
      * @param componentT
      * @return Bool
      */
-    public inline function hasComponent(componentT:ComponentType):Bool {
-        return components.exists(componentT);
+    public inline function hasComponent<T:Component>(componentT:Class<T>):Bool {
+        var name = Type.getClassName(componentT);
+        return components.exists(name);
     }
 
     /**
      * Remove a Component from this Entity
      * @param componentT
      */
-    public inline function removeComponent(componentT:ComponentType) {
+    public inline function removeComponent<T:Component>(componentT:Class<T>) {
         if (!hasComponent(componentT)) {
             throw "Component type not present in this Entity";
         }
         if (droppedComponents.length == 0) {
             myWorld.registerEntityForRemoveFlush(this);
         }
-        droppedComponents.push(componentT);
-    }
-
-    private inline function get_c():Map<ComponentType, Component> {
-        return components;
+        var name = Type.getClassName(componentT);
+        droppedComponents.push(name);
     }
 
     // Deferred component updates
 
-    private inline function getPostRemovalComponentTypes():Array<ComponentType> {
+    private inline function getPostRemovalComponentTypes():Array<String> {
         var arr = [for (c in components.keys()) c];
         for (c in droppedComponents) {
             arr.remove(c);
@@ -95,7 +93,7 @@ class Entity {
         return arr;
     }
 
-    private inline function getPostAdditionComponentTypes():Array<ComponentType> {
+    private inline function getPostAdditionComponentTypes():Array<String> {
         var arr = [for (c in components.keys()) c];
         for (c in addedComponents.keys()) {
             arr.push(c);
@@ -119,7 +117,7 @@ class Entity {
 
     private inline function destroy() {
         for (c in components.keys()) {
-            removeComponent(c);
+            removeComponent(Type.resolveClass(c));
         }
     }
 

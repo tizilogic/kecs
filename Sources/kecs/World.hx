@@ -1,6 +1,5 @@
 package kecs;
 
-import kecs.CustomTypes;
 import kecs.Entity;
 import kecs.System;
 
@@ -100,9 +99,9 @@ class World {
      * @param systemT
      * @return Bool
      */
-    public function hasSystem(systemT:SystemType):Bool {
+    public function hasSystem<T:System>(systemT:Class<T>):Bool {
         for (id in systems.keys()) {
-            if (Type.getClassName(Type.getClass(systems[id])) == systemT) {
+            if (Type.getClassName(Type.getClass(systems[id])) == Type.getClassName(systemT)) {
                 return true;
             }
         }
@@ -114,10 +113,10 @@ class World {
      * @param systemT
      * @return System
      */
-    public function getSystem(systemT:SystemType):System {
+    public function getSystem<T:System>(systemT:Class<T>):T{
         for (id in systems.keys()) {
-            if (Type.getClassName(Type.getClass(systems[id])) == systemT) {
-                return systems[id];
+            if (Type.getClassName(Type.getClass(systems[id])) == Type.getClassName(systemT)) {
+                return cast systems[id];
             }
         }
         throw "Unable to find a matching System";
@@ -127,9 +126,9 @@ class World {
      * Remove a System from this World.
      * @param systemT The derived class of the System to remove
      */
-    public function removeSystem(systemT:SystemType) {
+    public function removeSystem<T:System>(systemT:Class<T>) {
         for (id in systems.keys()) {
-            if (Type.getClassName(Type.getClass(systems[id])) == systemT) {
+            if (Type.getClassName(Type.getClass(systems[id])) == Type.getClassName(systemT)) {
                 systems[id].destroy();
                 systems.remove(id);
                 sortArr.remove(id);

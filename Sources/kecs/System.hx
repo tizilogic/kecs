@@ -1,6 +1,5 @@
 package kecs;
 
-import kecs.CustomTypes;
 import kecs.Entity;
 import kecs.Filter;
 import kecs.World;
