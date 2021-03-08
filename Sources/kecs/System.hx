@@ -89,7 +89,7 @@ class System {
         for (kv in myFilters.keyValueIterator()) {
             var match = kv.value.eval(futureComponents);
             var present = myEntities[kv.value].contains(entity);
-            if (match && !present) {
+            if (!match && present) {
                 myEntities[kv.value].remove(entity);
                 exitedFilters.push(kv.key);
             }
