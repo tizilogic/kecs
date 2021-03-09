@@ -127,6 +127,12 @@ class Entity {
     }
 
     public inline function toString():String {
-        return myWorld.entityName[this];
+        var name = myWorld.entityName[this];
+        var description = "Entity(" + name + ") {\n";
+        for (component in components) {
+            description = description + "  " + component + "\n";
+        }
+        description = description + "}";
+        return description;
     }
 }
