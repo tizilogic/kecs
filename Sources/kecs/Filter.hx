@@ -60,6 +60,7 @@ class _BaseFilter implements Filter {
 
     public function eval(componentTypes:Array<ClassKey>):Bool {
         trace("ERROR: _BaseFilter is not meant to be used directly");
+        return false;
     }
 }
 
