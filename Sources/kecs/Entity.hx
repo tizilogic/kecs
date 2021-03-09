@@ -13,6 +13,9 @@ import kecs.World;
 class Entity {
     private static var currentId:Int = 0;
 
+    /**
+     * Direct access to the underlying Map holding components.
+     */
     public var c(get, null):Map<ClassKey, Component>;
 
     private var myWorld:World;
@@ -37,10 +40,12 @@ class Entity {
     public inline function addComponent(component:Component) {
         var t = Type.getClass(component);
         if (components.exists(t) && !droppedComponents.contains(t)) {
-            throw "Component type is already part of this Entity: " + Type.getClassName(t);
+            trace("ERROR: Component type is already part of this Entity: " + Type.getClassName(t));
+            return;
         }
         if (addedComponents.exists(t)) {
-            throw "Component type is already being added to this Entity: " + Type.getClassName(t);
+            trace("ERROR: Component type is already being added to this Entity: " + Type.getClassName(t));
+            return;
         }
         if (!addedComponents.keys().hasNext()) {
             myWorld.registerEntityForAddFlush(this);
@@ -49,15 +54,12 @@ class Entity {
     }
 
     /**
-     * Get a Component of this Entity by its Type
+     * Get a Component of this Entity by its Type.
      * @param componentT
-     * @return Component
+     * @return Component or `null` if no component of this type could be found
      */
     public function getComponent<T:Component>(componentT:Class<T>):T {
         var c:T = cast components[componentT];
-        if (c == null) {
-            throw "Component type not present in this Entity: " + Type.getClassName(componentT);
-        }
         return c;
     }
 
@@ -80,7 +82,8 @@ class Entity {
      */
     public inline function removeComponent<T:Component>(componentT:Class<T>) {
         if (!hasComponent(componentT)) {
-            throw "Component type not present in this Entity: " + Type.getClassName(componentT);
+            trace("ERROR: Component type not present in this Entity: " + Type.getClassName(componentT));
+            return;
         }
         if (droppedComponents.length == 0) {
             myWorld.registerEntityForRemoveFlush(this);

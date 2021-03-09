@@ -21,11 +21,12 @@ class FilterFactory {
      * `kecs.Component` types and match all sub-filters.
      * @param componentTypes Optional Array of Component Types
      * @param filters
-     * @return Filter
+     * @return Filter or `null` if unable to build the Filter
      */
     public static function andFilter<T:Component>(?componentTypes:Array<ClassKey>, ?filters:Array<Filter>):Filter {
         if (componentTypes == null && filters == null) {
-            throw "At least one parameter has to be passed in.";
+            trace("ERROR: At least one parameter has to be passed in.");
+            return null;
         }
         return new _AndFilter(componentTypes, filters);
     }
@@ -35,11 +36,12 @@ class FilterFactory {
      * specified `kecs.Component` types or match at least one sub-filter.
      * @param componentTypes
      * @param filters
-     * @return Filter
+     * @return Filter or `null` if unable to build the Filter
      */
     public static function orFilter<T:Component>(?componentTypes:Array<ClassKey>, ?filters:Array<Filter>):Filter {
         if (componentTypes == null && filters == null) {
-            throw "At least one parameter has to be passed in.";
+            trace("ERROR: At least one parameter has to be passed in.");
+            return null;
         }
         return new _OrFilter(componentTypes, filters);
     }
@@ -57,7 +59,7 @@ class _BaseFilter implements Filter {
     }
 
     public function eval(componentTypes:Array<ClassKey>):Bool {
-        throw "_BaseFilter is not meant to be used directly";
+        trace("ERROR: _BaseFilter is not meant to be used directly");
     }
 }
 

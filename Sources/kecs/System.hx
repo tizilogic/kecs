@@ -35,7 +35,7 @@ class System {
      * Exception.
      */
     public function update() {
-        throw "This function must be overridden by the derived class";
+        trace("ERROR: This function must be overridden by the derived class");
     }
 
     private function enterFilters(filters:Array<String>, entity:Entity) {

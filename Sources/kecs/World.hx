@@ -51,37 +51,44 @@ class World {
     /**
      * Retrieve an Entity from this world by its `id`.
      * @param id
+     * @return Entity or `null` if no Entity with this `id`
      */
-    public function getEntity(id:Int) {
+    public function getEntity(id:Int):Entity {
         if (entities.exists(id)) {
             return entities[id];
         }
-        throw "No entity present with id = " + id;
+        trace("ERROR: No entity present with id = " + id);
+        return null;
     }
 
     /**
      * Remove an Entity from this world either by providing its `id` or the instance itself.
      * @param id
      * @param entity
+     * @return Bool success
      */
-    public function removeEntity(?id:Int = -1, ?entity:Entity = null) {
+    public function removeEntity(?id:Int = -1, ?entity:Entity = null):Bool {
         if (entity != null) {
             id = entity.id;
         }
         if (id < 0) {
-            throw "No entity present with id = " + id;
+            trace("ERROR: No entity present with id = " + id);
+            return false;
         }
         delPool.push(entities[id]);
+        return true;
     }
 
     /**
      * Add a System to this World.
      * @param system
      * @param sort Defines the order of execution during World update cycles.
+     * @return Bool success
      */
-    public function addSystem(system:System, sort:Int) {
+    public function addSystem(system:System, sort:Int):Bool {
         if (systems.exists(sort)) {
-            throw "A system with sort " + sort + " already exists";
+            trace("ERROR: A system with sort " + sort + " already exists");
+            return false;
         }
         systems[sort] = system;
         system.myWorld = this;
@@ -92,6 +99,7 @@ class World {
         for (id in entities.keys()) {
             system.proposeAdd(entities[id]);
         }
+        return true;
     }
 
     /**
@@ -111,7 +119,7 @@ class World {
     /**
      * Return the System instance of the given system type.
      * @param systemT
-     * @return System
+     * @return System or `null` if unable to find a system of that type
      */
     public function getSystem<T:System>(systemT:Class<T>):T{
         for (id in systems.keys()) {
@@ -119,23 +127,26 @@ class World {
                 return cast systems[id];
             }
         }
-        throw "Unable to find a matching System";
+        trace("ERROR: Unable to find a matching System");
+        return null;
     }
 
     /**
      * Remove a System from this World.
      * @param systemT The derived class of the System to remove
+     * @return Bool success
      */
-    public function removeSystem<T:System>(systemT:Class<T>) {
+    public function removeSystem<T:System>(systemT:Class<T>):Bool {
         for (id in systems.keys()) {
             if (Type.getClassName(Type.getClass(systems[id])) == Type.getClassName(systemT)) {
                 systems[id].destroy();
                 systems.remove(id);
                 sortArr.remove(id);
-                return;
+                return true;
             }
         }
-        throw "Unable to find a matching System to remove";
+        trace("ERROR: Unable to find a matching System to remove");
+        return false;
     }
 
     /**
