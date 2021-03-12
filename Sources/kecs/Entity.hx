@@ -4,8 +4,6 @@ import kecs.Component;
 import kecs.World;
 
 
-@:coreType abstract ClassKey from Class<Dynamic> to {} {}
-
 /**
  * Entity is a container for a set of `kecs.Component`
  */
@@ -13,16 +11,11 @@ import kecs.World;
 class Entity {
     private static var currentId:Int = 0;
 
-    /**
-     * Direct access to the underlying Map holding components.
-     */
-    public var c(get, null):Map<ClassKey, Component>;
-
     private var myWorld:World;
     private var id:Int;
-    private var components:Map<ClassKey, Component>;
-    private var addedComponents:Map<ClassKey, Component>;
-    private var droppedComponents:Array<ClassKey>;
+    private var components:Map<String, Component>;
+    private var addedComponents:Map<String, Component>;
+    private var droppedComponents:Array<String>;
 
     public function new(world:World) {
         myWorld = world;
@@ -38,13 +31,13 @@ class Entity {
      * @param component
      */
     public inline function addComponent(component:Component) {
-        var t = Type.getClass(component);
-        if (components.exists(t) && !droppedComponents.contains(t)) {
-            trace("ERROR: Component type is already part of this Entity: " + Type.getClassName(t));
+        var name = Type.getClassName(Type.getClass(component));
+        if (components.exists(t) && !droppedComponents.contains(name)) {
+            trace("ERROR: Component type is already part of this Entity: " + name);
             return;
         }
         if (addedComponents.exists(t)) {
-            trace("ERROR: Component type is already being added to this Entity: " + Type.getClassName(t));
+            trace("ERROR: Component type is already being added to this Entity: " + name);
             return;
         }
         if (!addedComponents.keys().hasNext()) {
@@ -59,12 +52,9 @@ class Entity {
      * @return Component or `null` if no component of this type could be found
      */
     public function getComponent<T:Component>(componentT:Class<T>):T {
-        var c:T = cast components[componentT];
+        var name = Type.getClassName(componentT);
+        var c:T = cast components[name];
         return c;
-    }
-
-    function get_c():Map<ClassKey, Component> {
-        return components;
     }
 
     /**
@@ -73,7 +63,8 @@ class Entity {
      * @return Bool
      */
     public inline function hasComponent<T:Component>(componentT:Class<T>):Bool {
-        return components.exists(componentT);
+        var name = Type.getClassName(componentT);
+        return components.exists(name);
     }
 
     /**
@@ -81,19 +72,20 @@ class Entity {
      * @param componentT
      */
     public inline function removeComponent<T:Component>(componentT:Class<T>) {
+        var name = Type.getClassName(componentT);
         if (!hasComponent(componentT)) {
-            trace("ERROR: Component type not present in this Entity: " + Type.getClassName(componentT));
+            trace("ERROR: Component type not present in this Entity: " + name);
             return;
         }
         if (droppedComponents.length == 0) {
             myWorld.registerEntityForRemoveFlush(this);
         }
-        droppedComponents.push(componentT);
+        droppedComponents.push(name);
     }
 
     // Deferred component updates
 
-    private inline function getPostRemovalComponentTypes():Array<ClassKey> {
+    private inline function getPostRemovalComponentTypes():Array<String> {
         var arr = [for (c in components.keys()) c];
         for (c in droppedComponents) {
             arr.remove(c);
@@ -101,7 +93,7 @@ class Entity {
         return arr;
     }
 
-    private inline function getPostAdditionComponentTypes():Array<ClassKey> {
+    private inline function getPostAdditionComponentTypes():Array<String> {
         var arr = [for (c in components.keys()) c];
         for (c in addedComponents.keys()) {
             arr.push(c);
@@ -125,7 +117,7 @@ class Entity {
 
     private inline function destroy() {
         for (c in components.keys()) {
-            removeComponent(cast c);
+            removeComponent(Type.resolveClass(c));
         }
     }
 
