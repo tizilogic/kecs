@@ -32,18 +32,18 @@ class Entity {
      */
     public inline function addComponent(component:Component) {
         var name = Type.getClassName(Type.getClass(component));
-        if (components.exists(t) && !droppedComponents.contains(name)) {
+        if (components.exists(name) && !droppedComponents.contains(name)) {
             trace("ERROR: Component type is already part of this Entity: " + name);
             return;
         }
-        if (addedComponents.exists(t)) {
+        if (addedComponents.exists(name)) {
             trace("ERROR: Component type is already being added to this Entity: " + name);
             return;
         }
         if (!addedComponents.keys().hasNext()) {
             myWorld.registerEntityForAddFlush(this);
         }
-        addedComponents[t] = component;
+        addedComponents[name] = component;
     }
 
     /**
