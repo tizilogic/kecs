@@ -1,7 +1,7 @@
 {
 	"name": "kecs",
 	"url" : "https://github.com/tizilogic/kecs",
-	"license": "MIT",
+	"license": "zlib",
 	"tags": ["cross", "game"],
 	"description": "Rudimentary ECS",
 	"version": "0.0.1",
